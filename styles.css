@@ -1,0 +1,356 @@
+/* Variables CSS */
+:root {
+    --card-size: 100px;
+    --header-bg: #2B7A78; /* Verde Oscuro/Teal para el encabezado */
+    --primary-color: #3AAFA9; /* Verde-Azul Primario (Normal) */
+    --secondary-color: #FEA443; /* Naranja/Amarillo Secundario (Difícil) */
+    --tertiary-color: #4CAF50; /* NUEVO: Verde para Modo Relax */
+    --bg-color: #DEF2F1; /* Fondo muy claro */
+    --card-back-color: #3F51B5; /* Azul Índigo */
+    --card-face-color: #ffffff;
+    --text-color-dark: #2B7A78;
+    --text-color-light: #FEFFFF;
+    --progress-bar-bg: #E0E0E0;
+    --progress-bar-fill: #3AAFA9;
+    --danger-color: #EF4444; /* Para vidas bajas o tiempo casi agotado */
+}
+
+/* Base y Tipografía */
+body {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: var(--bg-color); 
+    color: var(--text-color-dark);
+    overflow: hidden; 
+}
+
+#app-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 500px; 
+    height: 100vh; 
+    background-color: var(--card-face-color);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    position: relative; 
+}
+
+/* Encabezado del Juego */
+#game-header {
+    background-color: var(--header-bg);
+    color: var(--text-color-light);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1em;
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: sticky; 
+    top: 0;
+    z-index: 30;
+}
+
+#header-title {
+    margin: 0;
+    font-size: 1.2em;
+    font-weight: 700;
+}
+
+.header-button {
+    background: none;
+    border: none;
+    color: var(--text-color-light);
+    font-size: 1em;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.header-button:hover:not(.placeholder) {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.header-button.placeholder {
+    visibility: hidden; 
+    width: 50px; 
+}
+
+
+/* Contenedor principal del juego (debajo del header) */
+#game-container {
+    flex-grow: 1; 
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    overflow-y: auto; 
+    background-color: var(--bg-color); 
+    position: relative; 
+}
+
+/* Información del Juego (Vidas, Puntuación) */
+#game-info {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 450px; 
+    margin-bottom: 0;
+    font-size: 1em;
+    font-weight: 600;
+    padding: 10px 15px;
+    background-color: var(--card-face-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+
+/* Barra de Tiempo del Juego */
+#game-timer-bar {
+    width: 100%;
+    max-width: 450px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--card-face-color);
+    padding: 10px 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    font-weight: 600;
+    color: var(--text-color-dark);
+}
+
+#game-timer-progress-container {
+    flex-grow: 1;
+    height: 10px;
+    background-color: var(--progress-bar-bg);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#game-timer-progress-bar {
+    height: 100%;
+    width: 100%; 
+    background-color: var(--progress-bar-fill);
+    border-radius: 5px;
+    transition: width 1s linear; 
+}
+#game-timer-progress-bar.warning {
+    background-color: var(--danger-color); 
+}
+
+
+/* Tablero de Juego */
+#game-board {
+    display: grid;
+    gap: 8px; 
+    margin: auto;
+    width: 100%;
+    max-width: 450px; 
+    flex-shrink: 0; 
+}
+
+/* Estilo de la Carta */
+.card {
+    /* El JS calculará el tamaño dinámicamente, pero se deja un valor base */
+    width: var(--card-size); 
+    height: var(--card-size);
+    perspective: 1000px; 
+    cursor: pointer;
+}
+
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    transform-style: preserve-3d;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card.flipped .card-inner {
+    transform: rotateY(180deg);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.card-face, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    /* El tamaño de fuente será ajustado por JS/CSS en función de var(--card-size) */
+    font-size: 2em; 
+    user-select: none;
+}
+
+.card-back {
+    background: var(--card-back-color);
+    color: var(--text-color-light);
+    border: 3px solid #303f9f;
+    font-weight: 700;
+}
+
+.card-face {
+    background-color: var(--card-face-color);
+    transform: rotateY(180deg);
+    border: 3px solid var(--primary-color);
+}
+
+.card.matched {
+    opacity: 0.3; 
+    pointer-events: none;
+    transition: opacity 0.5s;
+    transform: scale(0.9); 
+}
+
+/* Animación de error (sacudida) */
+.card .card-inner.mismatch-shake {
+    animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+
+/* Menús de Overlay (General para todos los overlays) */
+.menu-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 40; 
+    backdrop-filter: blur(5px); 
+}
+
+.menu-box {
+    background-color: var(--card-face-color);
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    max-width: 350px;
+    text-align: center;
+    transform: scale(0.9); 
+    opacity: 0;
+    animation: fadeInScale 0.3s ease-out forwards;
+}
+
+@keyframes fadeInScale {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.menu-box .title {
+    color: var(--primary-color); 
+    margin-top: 0;
+    font-weight: 700;
+    font-size: 1.8em;
+}
+
+/* Botones */
+.btn {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 10px;
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+    min-width: 150px; 
+}
+
+.btn.primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn.secondary {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+/* NUEVO: Botón Terciario (Modo Relax) */
+.btn.tertiary {
+    background-color: var(--tertiary-color);
+    color: white;
+}
+
+
+.btn:hover:not(.hidden) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.mode-buttons-group {
+    display: flex;
+    flex-direction: column; 
+    gap: 15px;
+    margin-top: 25px;
+}
+/* Modificación para soportar 3 botones en fila en pantallas medianas */
+@media (min-width: 400px) { 
+    .mode-buttons-group {
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap; 
+    }
+}
+
+
+.hidden {
+    display: none !important;
+}
+
+/* NUEVO: Estilo del Botón de Power-up/Pista */
+#use-powerup-button {
+    width: 100%; /* Ocupa el ancho completo debajo del tablero */
+    max-width: 450px;
+    margin-top: 10px;
+    padding: 12px 15px;
+    font-size: 1.1em;
+    font-weight: 700;
+    /* Usa un color que destaque, como el secundario */
+    background-color: var(--secondary-color); 
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s;
+}
+
+#use-powerup-button:hover:not(:disabled) {
+    background-color: #f7962c; /* Tono más oscuro al pasar el ratón */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+#use-powerup-button:disabled {
+    background-color: #9E9E9E; /* Gris cuando está deshabilitado */
+    color: #E0E0E0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
