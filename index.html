@@ -6,7 +6,7 @@
     <title>Trivia Galáctica</title>
     <!-- Incluir Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome para íconos de Pausa/Sonido -->
+    <!-- Font Awesome para íconos de Pausa/Sonido (CORREGIDO) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <!-- Configuración para usar un font futurista y neón -->
@@ -67,7 +67,6 @@
         .neon-button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            filter: grayscale(100%);
         }
 
         /* Título Principal con super neón */
@@ -75,7 +74,7 @@
             text-shadow: 0 0 7px #fff, 0 0 10px #fff, 0 0 21px #00E5FF, 0 0 42px #00E5FF, 0 0 82px #00E5FF;
         }
         
-        /* ESTILOS DE RETROALIMENTACIÓN DE NEÓN */
+        /* 1. ESTILOS DE RETROALIMENTACIÓN DE NEÓN (NUEVO) */
         .option-button.correct {
             border-color: #00FF00; /* Verde neón */
             box-shadow: 0 0 15px #00FF00, 0 0 25px #00FF00;
@@ -93,7 +92,7 @@
         /* Estilos de la barra de vida */
         #lives-bar {
             display: flex;
-            gap: 6px; 
+            gap: 6px; /* Espaciado ajustado */
         }
         .life-segment {
             width: 20px;
@@ -107,12 +106,12 @@
             box-shadow: 0 0 8px #FF0064;
         }
         
-        /* MEJORA DEL HUD (Header de Juego) */
+        /* 2. MEJORA DEL HUD (Header de Juego) */
         #game-hud {
             display: grid;
-            grid-template-columns: 1fr 1fr auto auto; /* Sector, Puntos, Vidas y Controles */
+            grid-template-columns: 1fr auto auto auto; /* 4 columnas para Puntos, Tiempo, Vidas y Controles */
             align-items: center;
-            gap: 16px; 
+            gap: 16px; /* Espaciado entre elementos del HUD */
             padding: 10px 16px;
         }
         
@@ -168,111 +167,41 @@
             color: #000000;
         }
 
-        /* --- NUEVOS ESTILOS PARA POWER-UPS Y NIVELES --- */
-        
-        /* Panel de Arsenal */
-        #powerup-arsenal {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            width: 100%;
-            padding: 10px 0;
-            margin-bottom: 20px; /* Separar de la pregunta */
-            border-bottom: 1px solid #00E5FF33;
-            border-top: 1px solid #00E5FF33;
+        @keyframes fade-in-out {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1.0); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.0); }
+        }
+
+        @keyframes hyperspace {
+            0% { opacity: 0; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0; transform: scale(1); }
+        }
+        .hyperspace-loading {
+            animation: hyperspace 2s ease-in-out infinite;
         }
         
-        /* Botón de Power-Up individual */
-        .powerup-button {
+        /* 3. AUMENTO DE ESPACIO PARA PREGUNTAS Y OPCIONES */
+        #question-area {
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
+            justify-content: center; /* Centrado vertical para la pregunta */
             align-items: center;
-            font-size: 0.75rem;
-            color: #E0F7FA;
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid transparent;
-            transition: all 0.2s;
-            cursor: pointer;
-            width: 90px;
-        }
-
-        .powerup-button:hover:not(:disabled) {
-            border-color: #00E5FF;
-            background-color: rgba(0, 229, 255, 0.1);
-            transform: scale(1.05);
+            padding: 20px 0;
         }
         
-        .powerup-button .count {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #FFD700; /* Oro */
-            text-shadow: 0 0 5px #FFD700;
-        }
-        
-        /* Estilo para Doble Puntuación activo */
-        #powerup-doble-puntuacion.active {
-            border-color: #FFD700;
-            background-color: rgba(255, 215, 0, 0.15);
-            box-shadow: 0 0 15px #FFD700;
-        }
-        
-        /* Estilo para Power-Up deshabilitado (no tienes o no puedes pagar) */
-        .powerup-button:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            filter: grayscale(100%);
-        }
-        
-        /* Modal de Subida de Nivel */
-        #level-up-modal {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
-            text-align: center;
-        }
-        
-        #level-up-modal.show {
-            display: flex;
-        }
-
-        .level-up-content {
-            padding: 30px;
-            border-radius: 15px;
-            background-color: #1a1e24;
-            border: 3px solid #FF0064;
-            box-shadow: 0 0 50px rgba(255, 0, 100, 0.8);
-            animation: pulse 1s infinite alternate;
-        }
-
-        @keyframes pulse {
-            from { box-shadow: 0 0 20px rgba(255, 0, 100, 0.5); }
-            to { box-shadow: 0 0 40px rgba(255, 0, 100, 1); }
+        #options-container {
+            margin-top: auto; /* Empuja las opciones hacia abajo, pero la pregunta sigue centrada */
+            margin-bottom: 20px; /* Margen inferior para que no se pegue al borde */
         }
     </style>
 </head>
 <body class="bg-black">
     <div class="device-frame">
 
-        <!-- Modal de Subida de Nivel (Oculto por defecto) -->
-        <div id="level-up-modal">
-            <div class="level-up-content">
-                <h3 id="level-up-title" class="text-4xl font-extrabold text-[#00E5FF] main-title mb-4">¡NIVEL ALCANZADO!</h3>
-                <p id="level-up-message" class="text-xl text-white mb-6">Has llegado al Sector 1. ¡Felicidades!</p>
-                <p id="level-up-reward" class="text-lg text-yellow-400 font-bold mb-8">Recompensa: 1 Power-Up de Tiempo Extra</p>
-                <button id="close-level-up-button" class="neon-button text-base px-8 py-2">
-                    CONTINUAR
-                </button>
-            </div>
-        </div>
-        
         <!-- Pantalla de Carga (Loading Screen) -->
         <div id="loading-screen" class="game-screen-content active justify-center items-center text-center">
             <div class="spinner"></div>
@@ -311,18 +240,18 @@
         <!-- Pantalla de Juego -->
         <div id="game-screen" class="game-screen-content hidden justify-between items-stretch">
             
-            <!-- HUD (Puntuación, Tiempo, Vidas, Controles) -->
-            <div id="game-hud" class="w-full bg-gray-900/50 rounded-lg border border-[#00E5FF]/30 mb-4">
-                <!-- 1. Sector Galáctico -->
-                <div class="flex items-center space-x-2">
-                    <i class="fas fa-satellite-dish text-purple-400 text-lg"></i>
-                    <span class="text-base">Sector: <span id="current-sector" class="text-purple-400 font-bold">1</span></span>
-                </div>
-                
-                <!-- 2. Puntos -->
+            <!-- HUD (Puntuación, Tiempo, Vidas, Controles) - MEJOR ORGANIZADO -->
+            <div id="game-hud" class="w-full bg-gray-900/50 rounded-lg border border-[#00E5FF]/30 mb-8">
+                <!-- 1. Puntos -->
                 <div class="flex items-center space-x-2">
                     <i class="fas fa-star text-yellow-400 text-lg"></i>
                     <span class="text-base">Puntos: <span id="current-score" class="text-yellow-400 font-bold">0</span></span>
+                </div>
+                
+                <!-- 2. Tiempo -->
+                <div class="flex items-center justify-center space-x-2">
+                    <i class="fas fa-clock text-red-500 text-lg"></i>
+                    <span class="text-base">Tiempo: <span id="question-timer-value" class="text-red-500 font-bold">15s</span></span>
                 </div>
                 
                 <!-- 3. Vidas -->
@@ -345,42 +274,17 @@
                 </div>
             </div>
 
-            <!-- Panel de Arsenal (Power-Ups) -->
-            <div id="powerup-arsenal">
-                <!-- Power-Up: Tiempo Extra (25 Puntos) -->
-                <button id="powerup-time-extra" class="powerup-button" data-cost="25" disabled>
-                    <i class="fas fa-hourglass-half text-green-400 text-xl"></i>
-                    <span class="count" id="pu-time-extra-count">0</span>
-                    <span class="cost text-xs">25 pts</span>
-                </button>
-                
-                <!-- Power-Up: 50/50 (50 Puntos) -->
-                <button id="powerup-50-50" class="powerup-button" data-cost="50" disabled>
-                    <i class="fas fa-bahai text-blue-400 text-xl"></i>
-                    <span class="count" id="pu-50-50-count">0</span>
-                    <span class="cost text-xs">50 pts</span>
-                </button>
-                
-                <!-- Power-Up: Doble Puntuación (75 Puntos) -->
-                <button id="powerup-doble-puntuacion" class="powerup-button" data-cost="75" disabled>
-                    <i class="fas fa-angle-double-up text-red-400 text-xl"></i>
-                    <span class="count" id="pu-doble-puntuacion-count">0</span>
-                    <span class="cost text-xs">75 pts</span>
-                </button>
-            </div>
-
-
             <!-- Área de la Pregunta (Ahora con ID para centrado) -->
             <div id="question-area" class="flex-grow flex flex-col justify-center items-center text-center">
                 <p class="text-xl text-[#00E5FF] mb-4">Puntuación Máxima: <span id="high-score-value">0</span></p>
                 <p id="question-text" class="text-2xl font-bold mb-10 text-white leading-relaxed">
                     ...Cargando pregunta...
                 </p>
-                <p id="timer-display" class="text-xl text-red-500 font-bold">Tiempo: <span id="question-timer-value">15s</span></p>
             </div>
             
             <!-- Área de Opciones (Más grande y separada del borde) -->
             <div id="options-container" class="grid grid-cols-2 gap-4 w-full">
+                <!-- Los botones serán más grandes gracias a los estilos .neon-button -->
                 <button class="option-button neon-button"></button>
                 <button class="option-button neon-button"></button>
                 <button class="option-button neon-button"></button>

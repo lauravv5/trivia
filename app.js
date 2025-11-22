@@ -22,7 +22,7 @@ const currentScoreElement = document.getElementById('current-score');
 const highScoreValueElement = document.getElementById('high-score-value');
 const gameOverHighScoreValueElement = document.getElementById('game-over-high-score-value');
 const finalScoreValueElement = document.getElementById('final-score-value');
-const startMenuHighScoreValueElement = document.getElementById('start-menu-high-score-value');
+const startMenuHighScoreValueElement = document.getElementById('start-menu-high-score-value'); // NUEVO
 const livesBar = document.getElementById('lives-bar');
 const feedbackMessage = document.getElementById('feedback-message');
 const questionTimerValueElement = document.getElementById('question-timer-value');
@@ -52,7 +52,6 @@ let questionTimer;
 
 // --- Audios ---
 // NOTA: Debes tener estos archivos en una carpeta 'assets/sounds/'
-// Las rutas deben ser corregidas si los archivos no están en esas ubicaciones.
 const correctSound = new Audio('assets/sounds/correct.mp3'); 
 const incorrectSound = new Audio('assets/sounds/incorrect.mp3');
 const gameOverSound = new Audio('assets/sounds/game-over.mp3');
@@ -93,7 +92,7 @@ function loadHighScore() {
     // Actualiza todos los elementos de High Score
     if (highScoreValueElement) highScoreValueElement.textContent = highScore;
     if (gameOverHighScoreValueElement) gameOverHighScoreValueElement.textContent = highScore;
-    if (startMenuHighScoreValueElement) startMenuHighScoreValueElement.textContent = highScore;
+    if (startMenuHighScoreValueElement) startMenuHighScoreValueElement.textContent = highScore; // ACTUALIZADO
 }
 
 function saveHighScore() {
@@ -105,7 +104,7 @@ function saveHighScore() {
     // Actualiza todos los elementos de High Score
     if (highScoreValueElement) highScoreValueElement.textContent = highScore;
     if (gameOverHighScoreValueElement) gameOverHighScoreValueElement.textContent = highScore;
-    if (startMenuHighScoreValueElement) startMenuHighScoreValueElement.textContent = highScore;
+    if (startMenuHighScoreValueElement) startMenuHighScoreValueElement.textContent = highScore; // ACTUALIZADO
 }
 
 // 📊 Actualización de la Interfaz (Score, Vidas)
@@ -132,9 +131,7 @@ function toggleSound() {
         if (soundIconOff) soundIconOff.style.display = 'none';
         
         // Reanuda la música solo si NO está pausado el juego
-        if (gameScreen.classList.contains('active') && !gamePaused) {
-             backgroundMusic.play();
-        } else if (startMenu.classList.contains('active') || modeSelectionMenu.classList.contains('active')) {
+        if (gameScreen.classList.contains('active') || startMenu.classList.contains('active')) {
              backgroundMusic.play();
         }
     } else {
@@ -183,14 +180,6 @@ function handleTimeout() {
     feedbackMessage.textContent = "¡Tiempo agotado! Pierdes una vida.";
     feedbackMessage.classList.add('show', 'incorrect');
     
-    // Marcar la respuesta correcta antes de la transición
-    const correctAnswer = gameScreen.currentQuestion.answer;
-    optionButtons.forEach(button => {
-        if (button.textContent === correctAnswer) {
-            button.classList.add('correct');
-        }
-    });
-    
     updateHUD();
 
     setTimeout(() => {
@@ -203,10 +192,11 @@ function handleTimeout() {
 }
 
 
-// --- Lógica de Preguntas y Juego ---
+// --- Lógica de Preguntas y Juego (CORREGIDA) ---
 
 /**
  * Filtra las preguntas por el modo actual y las mezcla aleatoriamente.
+ * Esto asegura un orden de preguntas único para cada partida.
  */
 function prepareQuestions() {
     // 1. Filtrar el pool por el modo de juego seleccionado (ej: 'easy' o 'hard')
@@ -226,7 +216,7 @@ function prepareQuestions() {
 
 function resetGame(mode) {
     gameMode = mode; 
-    prepareQuestions(); // Genera un nuevo orden aleatorio de preguntas
+    prepareQuestions(); // Genera un nuevo orden aleatorio de 30 preguntas
     currentQuestionIndex = 0;
     score = 0;
     lives = MAX_LIVES;
@@ -236,7 +226,7 @@ function resetGame(mode) {
     feedbackMessage.classList.remove('show', 'correct', 'incorrect');
     stopSound(gameOverSound);
     
-    if (soundEnabled) {
+    if (soundEnabled && !gamePaused) {
         backgroundMusic.play();
     }
 }
@@ -247,12 +237,11 @@ function resetGame(mode) {
 function loadNewQuestion() {
     optionButtons.forEach(button => {
         button.disabled = true;
-        // Limpiar estilos de retroalimentación
         button.classList.remove('correct', 'incorrect'); 
     });
     clearTimer();
 
-    // Revisa si se han agotado las preguntas del pool mezclado
+    // Revisa si se han agotado las preguntas del pool mezclado (30)
     if (currentQuestionIndex >= questionsPool.length) {
         gameOver(true); 
         return;
@@ -264,7 +253,7 @@ function loadNewQuestion() {
 
     questionText.textContent = questionData.question;
 
-    // Mezclar las OPCIONES de respuesta
+    // Mezclar las OPCIONES de respuesta (esto es diferente al mezclado de preguntas)
     const mixedOptions = [...questionData.options].sort(() => Math.random() - 0.5);
 
     optionButtons.forEach((button, index) => {
@@ -281,11 +270,6 @@ function loadNewQuestion() {
     startTimer(questionData.time); 
 }
 
-/**
- * Comprueba la respuesta seleccionada y actualiza el estado del juego.
- * @param {HTMLButtonElement} selectedButton El botón que el usuario ha pulsado.
- * @param {string} correctAnswer La respuesta correcta.
- */
 function checkAnswer(selectedButton, correctAnswer) {
     clearTimer(); 
     optionButtons.forEach(button => button.disabled = true);
@@ -296,21 +280,18 @@ function checkAnswer(selectedButton, correctAnswer) {
     if (isCorrect) {
         playSound(correctSound);
         score += questionData.points;
-        // Aplica el estilo correcto al botón seleccionado
         selectedButton.classList.add('correct');
         feedbackMessage.textContent = `¡Respuesta Correcta! (+${questionData.points} pts)`;
         feedbackMessage.classList.add('show', 'correct');
     } else {
         playSound(incorrectSound);
         lives--; 
-        // Aplica el estilo incorrecto al botón seleccionado
         selectedButton.classList.add('incorrect');
         feedbackMessage.textContent = "¡Respuesta Incorrecta!";
 
-        // Muestra la respuesta correcta con neón verde
         optionButtons.forEach(button => {
             if (button.textContent === correctAnswer) {
-                button.classList.add('correct'); // <-- Muestra la respuesta correcta
+                button.classList.add('correct');
             }
         });
     }
@@ -320,7 +301,6 @@ function checkAnswer(selectedButton, correctAnswer) {
 
     currentQuestionIndex++; // Avanza al siguiente índice de la lista mezclada
 
-    // Espera 1.5 segundos para la retroalimentación visual antes de cargar la siguiente pregunta
     setTimeout(() => {
         if (lives <= 0) {
             gameOver(false); 
@@ -356,12 +336,7 @@ function togglePause() {
         showScreen(pauseMenu);
     } else if (pauseMenu.classList.contains('active')) {
         gamePaused = false;
-        // Reinicia el temporizador de la pregunta actual al reanudar
-        const questionData = questionsPool[currentQuestionIndex - 1]; // Obtener la pregunta anterior
-        if (questionData) {
-            startTimer(questionData.time); 
-        }
-        
+        loadNewQuestion(); 
         if (soundEnabled) {
             backgroundMusic.play();
         }
@@ -387,7 +362,7 @@ hardModeButton.addEventListener('click', () => {
 
 backToStartButton.addEventListener('click', () => {
     showScreen(startMenu);
-    loadHighScore(); 
+    loadHighScore(); // Asegura que el high score se refresque
 });
 
 pauseButton.addEventListener('click', togglePause);
@@ -429,12 +404,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (storedSoundPref !== null) {
         soundEnabled = (storedSoundPref === 'true');
     }
-    toggleSound(); // Llama para establecer el ícono correcto al inicio
+    const soundIconOn = document.getElementById('sound-icon-on');
+    const soundIconOff = document.getElementById('sound-icon-off');
+    if (!soundEnabled) {
+        if (soundIconOn) soundIconOn.style.display = 'none';
+        if (soundIconOff) soundIconOff.style.display = 'block';
+    }
 
     // Simular carga y mostrar menú inicial
     setTimeout(() => {
         showScreen(startMenu);
-        // La música se inicia aquí o se reanuda en toggleSound si se habilitó
         if (soundEnabled) {
             backgroundMusic.play().catch(e => console.log("Música iniciada en el menú, necesita interacción:", e));
         }
