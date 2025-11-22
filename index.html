@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia Galáctica</title>
+    <!-- Incluir Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome para íconos de Pausa/Sonido -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- Configuración para usar un font futurista y neón -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+        
+        /* Configuración global de estilos */
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #000000;
+            color: #E0F7FA;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Contenedor principal que simula un dispositivo */
+        .device-frame {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            height: 95vh;
+            max-height: 800px;
+            background-color: #0d1117; 
+            border: 8px solid #00E5FF; /* Borde exterior neón */
+            border-radius: 40px;
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.7);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Estilos de botones de neón (Base) */
+        .neon-button {
+            background-color: transparent;
+            border: 2px solid #00E5FF;
+            color: #E0F7FA;
+            padding: 18px 24px; /* Aumentado el padding para botones más grandes */
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+            transition: all 0.3s ease, background-color 0.5s, box-shadow 0.5s;
+            font-size: 1.1rem; /* Aumentado el tamaño de fuente */
+        }
+
+        /* Estilos de botones de neón (Hover/Active) */
+        .neon-button:hover:not(:disabled) {
+            background-color: rgba(0, 229, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.8), 0 0 30px rgba(0, 229, 255, 0.5);
+            transform: scale(1.05);
+        }
+
+        .neon-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(100%);
+        }
+
+        /* Título Principal con super neón */
+        .main-title {
+            text-shadow: 0 0 7px #fff, 0 0 10px #fff, 0 0 21px #00E5FF, 0 0 42px #00E5FF, 0 0 82px #00E5FF;
+        }
+        
+        /* ESTILOS DE RETROALIMENTACIÓN DE NEÓN */
+        .option-button.correct {
+            border-color: #00FF00; /* Verde neón */
+            box-shadow: 0 0 15px #00FF00, 0 0 25px #00FF00;
+            background-color: rgba(0, 255, 0, 0.2);
+            color: #FFFFFF;
+        }
+
+        .option-button.incorrect {
+            border-color: #FF0000; /* Rojo neón */
+            box-shadow: 0 0 15px #FF0000, 0 0 25px #FF0000;
+            background-color: rgba(255, 0, 0, 0.2);
+            color: #FFFFFF;
+        }
+
+        /* Estilos de la barra de vida */
+        #lives-bar {
+            display: flex;
+            gap: 6px; 
+        }
+        .life-segment {
+            width: 20px;
+            height: 10px;
+            background-color: rgba(255, 0, 100, 0.2);
+            border-radius: 2px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        .life-segment.active {
+            background-color: #FF0064; /* Rosa neón para vida */
+            box-shadow: 0 0 8px #FF0064;
+        }
+        
+        /* MEJORA DEL HUD (Header de Juego) */
+        #game-hud {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto auto; /* Sector, Puntos, Vidas y Controles */
+            align-items: center;
+            gap: 16px; 
+            padding: 10px 16px;
+        }
+        
+        /* Estilos de pantallas no esenciales */
+        .spinner {
+            border: 8px solid rgba(255, 255, 255, 0.1);
+            border-top: 8px solid #00E5FF;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .game-screen-content {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .game-screen-content.active {
+            display: flex;
+        }
+
+        /* Mensajes de feedback */
+        #feedback-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: none;
+            z-index: 10;
+        }
+        #feedback-message.show {
+            display: block;
+            animation: fade-in-out 1.5s forwards;
+        }
+        #feedback-message.correct {
+            background-color: rgba(0, 255, 0, 0.7);
+            color: #000000;
+        }
+        #feedback-message.incorrect {
+            background-color: rgba(255, 0, 0, 0.7);
+            color: #000000;
+        }
+
+        /* --- NUEVOS ESTILOS PARA POWER-UPS Y NIVELES --- */
+        
+        /* Panel de Arsenal */
+        #powerup-arsenal {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            padding: 10px 0;
+            margin-bottom: 20px; /* Separar de la pregunta */
+            border-bottom: 1px solid #00E5FF33;
+            border-top: 1px solid #00E5FF33;
+        }
+        
+        /* Botón de Power-Up individual */
+        .powerup-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.75rem;
+            color: #E0F7FA;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            cursor: pointer;
+            width: 90px;
+        }
+
+        .powerup-button:hover:not(:disabled) {
+            border-color: #00E5FF;
+            background-color: rgba(0, 229, 255, 0.1);
+            transform: scale(1.05);
+        }
+        
+        .powerup-button .count {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #FFD700; /* Oro */
+            text-shadow: 0 0 5px #FFD700;
+        }
+        
+        /* Estilo para Doble Puntuación activo */
+        #powerup-doble-puntuacion.active {
+            border-color: #FFD700;
+            background-color: rgba(255, 215, 0, 0.15);
+            box-shadow: 0 0 15px #FFD700;
+        }
+        
+        /* Estilo para Power-Up deshabilitado (no tienes o no puedes pagar) */
+        .powerup-button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            filter: grayscale(100%);
+        }
+        
+        /* Modal de Subida de Nivel */
+        #level-up-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            text-align: center;
+        }
+        
+        #level-up-modal.show {
+            display: flex;
+        }
+
+        .level-up-content {
+            padding: 30px;
+            border-radius: 15px;
+            background-color: #1a1e24;
+            border: 3px solid #FF0064;
+            box-shadow: 0 0 50px rgba(255, 0, 100, 0.8);
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { box-shadow: 0 0 20px rgba(255, 0, 100, 0.5); }
+            to { box-shadow: 0 0 40px rgba(255, 0, 100, 1); }
+        }
+    </style>
+</head>
+<body class="bg-black">
+    <div class="device-frame">
+
+        <!-- Modal de Subida de Nivel (Oculto por defecto) -->
+        <div id="level-up-modal">
+            <div class="level-up-content">
+                <h3 id="level-up-title" class="text-4xl font-extrabold text-[#00E5FF] main-title mb-4">¡NIVEL ALCANZADO!</h3>
+                <p id="level-up-message" class="text-xl text-white mb-6">Has llegado al Sector 1. ¡Felicidades!</p>
+                <p id="level-up-reward" class="text-lg text-yellow-400 font-bold mb-8">Recompensa: 1 Power-Up de Tiempo Extra</p>
+                <button id="close-level-up-button" class="neon-button text-base px-8 py-2">
+                    CONTINUAR
+                </button>
+            </div>
+        </div>
+        
+        <!-- Pantalla de Carga (Loading Screen) -->
+        <div id="loading-screen" class="game-screen-content active justify-center items-center text-center">
+            <div class="spinner"></div>
+            <p class="mt-8 text-xl text-[#00E5FF] hyperspace-loading">Cargando Nave...</p>
+        </div>
+        
+        <!-- Menú de Inicio -->
+        <div id="start-menu" class="game-screen-content hidden justify-center items-center text-center">
+            <h1 class="main-title text-5xl font-extrabold mb-4 text-white">
+                TRIVIA GALÁCTICA
+            </h1>
+            <p class="text-xl text-[#00E5FF] mb-8">
+                Preparando el Salto Hiperespacial...
+            </p>
+            <p class="text-lg text-yellow-400 mb-12">Puntuación Máxima: <span id="start-menu-high-score-value">0</span></p>
+
+            <button id="start-button" class="neon-button text-2xl px-12 py-4">
+                INICIAR VIAJE
+            </button>
+        </div>
+
+        <!-- Menú de Selección de Modo -->
+        <div id="mode-selection-menu" class="game-screen-content hidden justify-center items-center text-center">
+            <h2 class="text-3xl text-[#E0F7FA] mb-8">SELECCIONA EL MODO</h2>
+            <button id="easy-mode-button" class="neon-button text-xl px-8 py-3 mb-6 w-full max-w-xs border-green-500 border-2 shadow-green-500/50 hover:shadow-green-500/80">
+                FÁCIL (15s/10pts)
+            </button>
+            <button id="hard-mode-button" class="neon-button text-xl px-8 py-3 mb-10 w-full max-w-xs border-red-500 border-2 shadow-red-500/50 hover:shadow-red-500/80">
+                DIFÍCIL (10s/25pts)
+            </button>
+            <button id="back-to-start-button" class="neon-button text-sm opacity-70">
+                &lt; Volver
+            </button>
+        </div>
+        
+        <!-- Pantalla de Juego -->
+        <div id="game-screen" class="game-screen-content hidden justify-between items-stretch">
+            
+            <!-- HUD (Puntuación, Tiempo, Vidas, Controles) -->
+            <div id="game-hud" class="w-full bg-gray-900/50 rounded-lg border border-[#00E5FF]/30 mb-4">
+                <!-- 1. Sector Galáctico -->
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-satellite-dish text-purple-400 text-lg"></i>
+                    <span class="text-base">Sector: <span id="current-sector" class="text-purple-400 font-bold">1</span></span>
+                </div>
+                
+                <!-- 2. Puntos -->
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-star text-yellow-400 text-lg"></i>
+                    <span class="text-base">Puntos: <span id="current-score" class="text-yellow-400 font-bold">0</span></span>
+                </div>
+                
+                <!-- 3. Vidas -->
+                <div class="flex items-center justify-end space-x-2">
+                    <i class="fas fa-heart text-[#FF0064] text-lg"></i>
+                    <div id="lives-bar">
+                        <div class="life-segment"></div>
+                        <div class="life-segment"></div>
+                        <div class="life-segment"></div>
+                    </div>
+                </div>
+                
+                <!-- 4. Controles (Pausa/Sonido) -->
+                <div class="flex space-x-4 justify-end">
+                    <button id="pause-button" class="text-[#00E5FF] hover:text-white transition text-lg"><i class="fas fa-pause"></i></button>
+                    <button id="sound-toggle-button" class="text-[#00E5FF] hover:text-white transition text-lg">
+                        <i id="sound-icon-on" class="fas fa-volume-up" style="display:block;"></i>
+                        <i id="sound-icon-off" class="fas fa-volume-mute" style="display:none;"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel de Arsenal (Power-Ups) -->
+            <div id="powerup-arsenal">
+                <!-- Power-Up: Tiempo Extra (25 Puntos) -->
+                <button id="powerup-time-extra" class="powerup-button" data-cost="25" disabled>
+                    <i class="fas fa-hourglass-half text-green-400 text-xl"></i>
+                    <span class="count" id="pu-time-extra-count">0</span>
+                    <span class="cost text-xs">25 pts</span>
+                </button>
+                
+                <!-- Power-Up: 50/50 (50 Puntos) -->
+                <button id="powerup-50-50" class="powerup-button" data-cost="50" disabled>
+                    <i class="fas fa-bahai text-blue-400 text-xl"></i>
+                    <span class="count" id="pu-50-50-count">0</span>
+                    <span class="cost text-xs">50 pts</span>
+                </button>
+                
+                <!-- Power-Up: Doble Puntuación (75 Puntos) -->
+                <button id="powerup-doble-puntuacion" class="powerup-button" data-cost="75" disabled>
+                    <i class="fas fa-angle-double-up text-red-400 text-xl"></i>
+                    <span class="count" id="pu-doble-puntuacion-count">0</span>
+                    <span class="cost text-xs">75 pts</span>
+                </button>
+            </div>
+
+
+            <!-- Área de la Pregunta (Ahora con ID para centrado) -->
+            <div id="question-area" class="flex-grow flex flex-col justify-center items-center text-center">
+                <p class="text-xl text-[#00E5FF] mb-4">Puntuación Máxima: <span id="high-score-value">0</span></p>
+                <p id="question-text" class="text-2xl font-bold mb-10 text-white leading-relaxed">
+                    ...Cargando pregunta...
+                </p>
+                <p id="timer-display" class="text-xl text-red-500 font-bold">Tiempo: <span id="question-timer-value">15s</span></p>
+            </div>
+            
+            <!-- Área de Opciones (Más grande y separada del borde) -->
+            <div id="options-container" class="grid grid-cols-2 gap-4 w-full">
+                <button class="option-button neon-button"></button>
+                <button class="option-button neon-button"></button>
+                <button class="option-button neon-button"></button>
+                <button class="option-button neon-button"></button>
+            </div>
+
+            <!-- Mensaje flotante de Feedback -->
+            <div id="feedback-message" class="text-center"></div>
+        </div>
+
+        <!-- Menú de Pausa -->
+        <div id="pause-menu" class="game-screen-content hidden justify-center items-center text-center">
+            <h2 class="text-4xl font-bold text-[#FF0064] mb-12 main-title">PAUSA ACTIVA</h2>
+            <button id="resume-button" class="neon-button text-xl px-8 py-3 mb-4 w-full max-w-xs border-green-500 border-2 shadow-green-500/50 hover:shadow-green-500/80">
+                REANUDAR
+            </button>
+            <button id="restart-from-pause-button" class="neon-button text-xl px-8 py-3 mb-4 w-full max-w-xs">
+                REINICIAR
+            </button>
+            <button id="quit-button" class="neon-button text-xl px-8 py-3 w-full max-w-xs border-red-500 border-2 shadow-red-500/50 hover:shadow-red-500/80">
+                SALIR AL MENÚ
+            </button>
+        </div>
+
+        <!-- Pantalla de Fin de Juego -->
+        <div id="game-over-screen" class="game-screen-content hidden justify-center items-center text-center">
+            <h2 class="game-over-title text-4xl font-bold text-[#FF0064] mb-8 main-title">¡Viaje Interrumpido!</h2>
+            
+            <p class="text-xl mb-4">Puntuación Final:</p>
+            <p id="final-score-value" class="text-5xl font-extrabold text-[#00E5FF] mb-8 main-title">0</p>
+            
+            <p class="text-lg text-yellow-400 mb-8">Puntuación Máxima: <span id="game-over-high-score-value">0</span></p>
+            
+            <button id="play-again-button" class="neon-button text-xl px-8 py-3 mb-4 w-full max-w-xs border-green-500 border-2 shadow-green-500/50 hover:shadow-green-500/80">
+                SELECCIONAR MODO
+            </button>
+            <button id="back-to-menu-button" class="neon-button text-xl px-8 py-3 w-full max-w-xs border-red-500/50">
+                VOLVER AL INICIO
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Enlazar archivos JS -->
+    <script src="./questions.js"></script>
+    <script src="./app.js"></script>
+</body>
+</html>
