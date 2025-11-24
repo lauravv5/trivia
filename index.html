@@ -4,17 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trivia Galáctica</title>
-    <!-- Incluir Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome para íconos de Pausa/Sonido (CORREGIDO) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
-    <!-- Configuración para usar un font futurista y neón -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
         
-        /* Configuración global de estilos */
+        /* -------------------------------------- */
+        /* Estilos CSS Base del Archivo index.html */
+        /* -------------------------------------- */
+        
         body {
+       
+            
             font-family: 'Orbitron', sans-serif;
             background-color: #000000;
             color: #E0F7FA;
@@ -26,7 +28,6 @@
             overflow: hidden;
         }
 
-        /* Contenedor principal que simula un dispositivo */
         .device-frame {
             position: relative;
             width: 100%;
@@ -45,19 +46,17 @@
             overflow: hidden;
         }
 
-        /* Estilos de botones de neón (Base) */
         .neon-button {
             background-color: transparent;
             border: 2px solid #00E5FF;
             color: #E0F7FA;
-            padding: 18px 24px; /* Aumentado el padding para botones más grandes */
+            padding: 18px 24px;
             border-radius: 12px;
             box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
             transition: all 0.3s ease, background-color 0.5s, box-shadow 0.5s;
-            font-size: 1.1rem; /* Aumentado el tamaño de fuente */
+            font-size: 1.1rem;
         }
 
-        /* Estilos de botones de neón (Hover/Active) */
         .neon-button:hover:not(:disabled) {
             background-color: rgba(0, 229, 255, 0.1);
             box-shadow: 0 0 20px rgba(0, 229, 255, 0.8), 0 0 30px rgba(0, 229, 255, 0.5);
@@ -69,53 +68,138 @@
             cursor: not-allowed;
         }
 
-        /* Título Principal con super neón */
         .main-title {
             text-shadow: 0 0 7px #fff, 0 0 10px #fff, 0 0 21px #00E5FF, 0 0 42px #00E5FF, 0 0 82px #00E5FF;
         }
         
-        /* 1. ESTILOS DE RETROALIMENTACIÓN DE NEÓN (NUEVO) */
         .option-button.correct {
-            border-color: #00FF00; /* Verde neón */
+            border-color: #00FF00;
             box-shadow: 0 0 15px #00FF00, 0 0 25px #00FF00;
             background-color: rgba(0, 255, 0, 0.2);
             color: #FFFFFF;
         }
 
         .option-button.incorrect {
-            border-color: #FF0000; /* Rojo neón */
+            border-color: #FF0000;
             box-shadow: 0 0 15px #FF0000, 0 0 25px #FF0000;
             background-color: rgba(255, 0, 0, 0.2);
             color: #FFFFFF;
         }
 
-        /* Estilos de la barra de vida */
         #lives-bar {
             display: flex;
-            gap: 6px; /* Espaciado ajustado */
+            gap: 6px;
         }
         .life-segment {
-            width: 20px;
-            height: 10px;
+            width: 15px; /* Reducido para compactar */
+            height: 8px; /* Reducido para compactar */
             background-color: rgba(255, 0, 100, 0.2);
             border-radius: 2px;
             transition: background-color 0.3s, box-shadow 0.3s;
         }
         .life-segment.active {
-            background-color: #FF0064; /* Rosa neón para vida */
+            background-color: #FF0064;
             box-shadow: 0 0 8px #FF0064;
         }
         
-        /* 2. MEJORA DEL HUD (Header de Juego) */
-        #game-hud {
-            display: grid;
-            grid-template-columns: 1fr auto auto auto; /* 4 columnas para Puntos, Tiempo, Vidas y Controles */
-            align-items: center;
-            gap: 16px; /* Espaciado entre elementos del HUD */
-            padding: 10px 16px;
+        /* ESTILO CORREGIDO Y NUEVO PARA EL HUD */
+        #game-hud-main {
+            /* Ahora contiene solo Vidas y Puntuación Clásica */
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            padding: 10px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+            margin-bottom: 10px;
         }
         
-        /* Estilos de pantallas no esenciales */
+        /* Contenedor del HUD superior, que ahora será el único visible en Modo Espacial */
+        #game-hud-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 10px 0;
+            margin-bottom: 10px;
+        }
+
+        .info-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed rgba(0, 229, 255, 0.2);
+        }
+        
+        /* Fila de elementos de info dentro del HUD Principal (Puntos, Tiempo, Racha) */
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Controles (Pausa/Sonido) ahora son un grupo que puede estar en cualquier HUD */
+        .hud-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        /* Power-ups: ahora son una fila separada para más claridad */
+        #power-up-hud {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+
+        .power-up-button {
+            border: 2px solid #00E5FF;
+            background-color: rgba(0, 229, 255, 0.1);
+            color: #E0F7FA;
+            padding: 5px 10px; /* Ajustado para hacerlo más compacto */
+            border-radius: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 0 5px rgba(0, 229, 255, 0.5);
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px; /* Ancho fijo para alineación */
+        }
+        .power-up-button:hover:not(:disabled) {
+            background-color: rgba(0, 229, 255, 0.3);
+            box-shadow: 0 0 15px #00E5FF;
+            transform: scale(1.05);
+        }
+        .power-up-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .power-up-count {
+            font-size: 0.8rem;
+            color: #00E5FF;
+            font-weight: bold;
+        }
+        .pu-icon {
+            font-size: 1.5rem; /* Icono más grande */
+            margin-bottom: 2px;
+        }
+        
+        /* --- El resto de tus estilos (spinner, game-screen-content, etc.) se mantienen igual --- */
+        
         .spinner {
             border: 8px solid rgba(255, 255, 255, 0.1);
             border-top: 8px solid #00E5FF;
@@ -141,7 +225,6 @@
             display: flex;
         }
 
-        /* Mensajes de feedback */
         #feedback-message {
             position: absolute;
             top: 50%;
@@ -183,32 +266,148 @@
             animation: hyperspace 2s ease-in-out infinite;
         }
         
-        /* 3. AUMENTO DE ESPACIO PARA PREGUNTAS Y OPCIONES */
         #question-area {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Centrado vertical para la pregunta */
+            justify-content: center;
             align-items: center;
             padding: 20px 0;
         }
         
         #options-container {
-            margin-top: auto; /* Empuja las opciones hacia abajo, pero la pregunta sigue centrada */
-            margin-bottom: 20px; /* Margen inferior para que no se pegue al borde */
+            margin-top: auto;
+            margin-bottom: 20px;
+        }
+        
+        /* Clase para ocultar la pantalla de juego con transición */
+        .game-screen-content.fade-out {
+            opacity: 0;
+            transform: translateY(-20px); /* Ligero movimiento hacia arriba al desaparecer */
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+
+        /* Clase para mostrar la pantalla de juego con transición */
+        .game-screen-content.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.3s ease-in 0.3s, transform 0.3s ease-in 0.3s; /* 0.3s de retraso */
+        }
+
+        /* Clase de animación para la pantalla de juego al iniciar/cargar */
+        #game-screen.hyperspace-jump {
+            animation: hyperspace-jump 0.6s cubic-bezier(0.5, 0.5, 0.5, 1) forwards;
+        }
+
+        /* Animación de Salto Hiperespacial (movimiento rápido y difuso) */
+        @keyframes hyperspace-jump {
+            0% { opacity: 0; transform: scale(1.05); filter: blur(3px); }
+            50% { opacity: 1; transform: scale(1); filter: blur(0px); }
+            100% { opacity: 1; transform: scale(1); filter: blur(0px); }
+        }
+        /* --- NUEVOS ESTILOS PARA EL MODO ESPACIAL --- */
+
+        /* Clase aplicada al #game-screen para cambiar la estética */
+        .space-mode-active {
+            /* Se asegura de que la estética cambie en todo el contenedor del juego */
+        }
+
+        /* Ocultar elementos no necesarios en Modo Espacial */
+        /* Eliminamos los selectores complejos que Tailwind no maneja bien y usamos IDs/Clases */
+        .space-mode-active #game-hud-main, /* Oculta el HUD clásico completo */
+        .space-mode-active #power-up-hud, /* Oculta los Power-ups */
+        .space-mode-active #question-area #high-score-display { /* Oculta Puntuación Máxima en la pantalla de juego */
+            display: none !important;
+        }
+
+        /* El Contenedor de la Pregunta toma más protagonismo en modo espacial */
+        .space-mode-active #question-area {
+            padding-top: 50px; 
+            justify-content: flex-start;
+        }
+        
+        /* Color neón púrpura para los elementos clave del modo espacial */
+        .space-mode-active .neon-button, 
+        .space-mode-active .device-frame {
+            border-color: #A020F0; /* Púrpura Neón */
+            box-shadow: 0 0 40px rgba(160, 32, 240, 0.7);
+        }
+        /* Los botones de modo se distinguen por color */
+        #space-mode-button {
+             border-color: #A020F0 !important; 
+             box-shadow: 0 0 10px rgba(160, 32, 240, 0.5) !important;
+        }
+        
+        /* Estilo de la Racha */
+        .space-mode-active #streak-count-value {
+            color: #FF00FF !important; /* Rosa/Fucsia Brillante para la racha */
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px #FF00FF;
+        }
+        .space-mode-active #streak-label {
+            color: #A020F0 !important;
+        }
+
+        /* Fondo animado de estrellas/partículas para el Modo Espacial */
+        .space-mode-active body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(2px 2px at 20px 30px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 100px 150px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 200px 50px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 150px 250px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 250px 250px;
+            opacity: 0.3;
+            animation: move-stars 120s linear infinite;
+            z-index: -1;
+        }
+        
+
+        /* En Modo Espacial, la Racha y Controles deben ser el foco principal del HUD */
+        .space-mode-active .hud-controls button {
+            color: #FF00FF !important;
+            text-shadow: 0 0 5px #FF00FF;
+        }
+        .space-mode-active .hud-controls button:hover {
+            color: white !important;
+        }
+        
+        /* Ajuste fino para centrar el contador de racha cuando el resto está oculto */
+        .space-mode-active #game-hud-top {
+            justify-content: space-between; /* Mantener la alineación */
+            background-color: transparent !important; /* Limpiar el fondo del HUD Top */
+        }
+        /* Ocultar el tiempo en modo espacial (aunque app.js ya lo hace, mejor asegurar) */
+        .space-mode-active #question-timer-value {
+             display: none !important;
+        }
+
+
+        @keyframes move-stars {
+            from {
+                background-position: 0 0;
+            }
+            to {
+                background-position: 100% 100%;
+            }
         }
     </style>
 </head>
 <body class="bg-black">
     <div class="device-frame">
 
-        <!-- Pantalla de Carga (Loading Screen) -->
         <div id="loading-screen" class="game-screen-content active justify-center items-center text-center">
             <div class="spinner"></div>
             <p class="mt-8 text-xl text-[#00E5FF] hyperspace-loading">Cargando Nave...</p>
         </div>
         
-        <!-- Menú de Inicio -->
         <div id="start-menu" class="game-screen-content hidden justify-center items-center text-center">
             <h1 class="main-title text-5xl font-extrabold mb-4 text-white">
                 TRIVIA GALÁCTICA
@@ -216,86 +415,108 @@
             <p class="text-xl text-[#00E5FF] mb-8">
                 Preparando el Salto Hiperespacial...
             </p>
-            <p class="text-lg text-yellow-400 mb-12">Puntuación Máxima: <span id="start-menu-high-score-value">0</span></p>
+            
+            <p class="text-lg text-purple-400 mb-4">
+                Título Máximo: <span id="max-space-title" class="text-purple-400 font-bold">Ninguno</span>
+            </p>
+            <p class="text-lg text-yellow-400 mb-12">Puntuación Máxima (Clásica): <span id="start-menu-high-score-value">0</span></p>
 
             <button id="start-button" class="neon-button text-2xl px-12 py-4">
                 INICIAR VIAJE
             </button>
         </div>
 
-        <!-- Menú de Selección de Modo -->
         <div id="mode-selection-menu" class="game-screen-content hidden justify-center items-center text-center">
             <h2 class="text-3xl text-[#E0F7FA] mb-8">SELECCIONA EL MODO</h2>
             <button id="easy-mode-button" class="neon-button text-xl px-8 py-3 mb-6 w-full max-w-xs border-green-500 border-2 shadow-green-500/50 hover:shadow-green-500/80">
                 FÁCIL (15s/10pts)
             </button>
-            <button id="hard-mode-button" class="neon-button text-xl px-8 py-3 mb-10 w-full max-w-xs border-red-500 border-2 shadow-red-500/50 hover:shadow-red-500/80">
+            <button id="hard-mode-button" class="neon-button text-xl px-8 py-3 mb-6 w-full max-w-xs border-red-500 border-2 shadow-red-500/50 hover:shadow-red-500/80">
                 DIFÍCIL (10s/25pts)
             </button>
+            <button id="space-mode-button" class="neon-button text-xl px-8 py-3 mb-10 w-full max-w-xs border-purple-500 border-2 shadow-purple-500/50 hover:shadow-purple-500/80">
+                ESPACIAL (Racha/Título)
+            </button>
+            
             <button id="back-to-start-button" class="neon-button text-sm opacity-70">
                 &lt; Volver
             </button>
         </div>
         
-        <!-- Pantalla de Juego -->
-        <div id="game-screen" class="game-screen-content hidden justify-between items-stretch">
+        <div id="game-screen" class="game-screen-content hidden flex-col">
             
-            <!-- HUD (Puntuación, Tiempo, Vidas, Controles) - MEJOR ORGANIZADO -->
-            <div id="game-hud" class="w-full bg-gray-900/50 rounded-lg border border-[#00E5FF]/30 mb-8">
-                <!-- 1. Puntos -->
-                <div class="flex items-center space-x-2">
-                    <i class="fas fa-star text-yellow-400 text-lg"></i>
-                    <span class="text-base">Puntos: <span id="current-score" class="text-yellow-400 font-bold">0</span></span>
-                </div>
-                
-                <!-- 2. Tiempo -->
-                <div class="flex items-center justify-center space-x-2">
-                    <i class="fas fa-clock text-red-500 text-lg"></i>
-                    <span class="text-base">Tiempo: <span id="question-timer-value" class="text-red-500 font-bold">15s</span></span>
-                </div>
-                
-                <!-- 3. Vidas -->
-                <div class="flex items-center justify-end space-x-2">
-                    <i class="fas fa-heart text-[#FF0064] text-lg"></i>
-                    <div id="lives-bar">
-                        <div class="life-segment"></div>
-                        <div class="life-segment"></div>
-                        <div class="life-segment"></div>
-                    </div>
-                </div>
-                
-                <!-- 4. Controles (Pausa/Sonido) -->
-                <div class="flex space-x-4 justify-end">
+            <div id="game-hud-top">
+                <div class="hud-controls">
                     <button id="pause-button" class="text-[#00E5FF] hover:text-white transition text-lg"><i class="fas fa-pause"></i></button>
                     <button id="sound-toggle-button" class="text-[#00E5FF] hover:text-white transition text-lg">
                         <i id="sound-icon-on" class="fas fa-volume-up" style="display:block;"></i>
                         <i id="sound-icon-off" class="fas fa-volume-mute" style="display:none;"></i>
                     </button>
                 </div>
+                
+                <div class="info-item flex-grow justify-center">
+                    <i class="fas fa-fire text-orange-400 text-lg" id="streak-label"></i>
+                    <span class="text-base">Racha: <span id="streak-count-value" class="text-orange-400 font-bold">0</span></span>
+                </div>
+                
+                <div class="info-item">
+                    <i class="fas fa-clock text-red-500 text-lg"></i>
+                    <span class="text-base">Tiempo: <span id="question-timer-value" class="text-red-500 font-bold">15s</span></span>
+                </div>
             </div>
 
-            <!-- Área de la Pregunta (Ahora con ID para centrado) -->
+            <div id="game-hud-main">
+                <div class="info-header-row">
+                    <div class="info-item">
+                        <i class="fas fa-star text-yellow-400 text-lg"></i>
+                        <span class="text-base">Puntos: <span id="current-score" class="text-yellow-400 font-bold">0</span></span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-heart text-[#FF0064] text-lg"></i>
+                        <span class="text-base">Vidas:</span>
+                    </div>
+                    <div id="lives-bar" class="flex items-center">
+                        <div class="life-segment"></div>
+                        <div class="life-segment"></div>
+                        <div class="life-segment"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="power-up-hud">
+                <button id="power-up-5050" class="power-up-button" title="Poder del Astro (50/50)">
+                    <i class="fas fa-magic pu-icon text-green-400"></i>
+                    <span class="text-xs">50/50</span>
+                    <span id="pu-5050-count" class="power-up-count">1</span>
+                </button>
+                <button id="power-up-time" class="power-up-button" title="Recarga Solar (+5s)">
+                    <i class="fas fa-sun pu-icon text-yellow-400"></i>
+                    <span class="text-xs">+5s</span>
+                    <span id="pu-time-count" class="power-up-count">1</span>
+                </button>
+                <button id="power-up-shield" class="power-up-button" title="Blindaje de Escudos">
+                    <i class="fas fa-shield-alt pu-icon text-red-400"></i>
+                    <span class="text-xs">Escudo</span>
+                    <span id="pu-shield-count" class="power-up-count">1</span>
+                </button>
+            </div>
+
             <div id="question-area" class="flex-grow flex flex-col justify-center items-center text-center">
-                <p class="text-xl text-[#00E5FF] mb-4">Puntuación Máxima: <span id="high-score-value">0</span></p>
+                <p id="high-score-display" class="text-xl text-[#00E5FF] mb-4">Puntuación Máxima: <span id="high-score-value">0</span></p> 
                 <p id="question-text" class="text-2xl font-bold mb-10 text-white leading-relaxed">
                     ...Cargando pregunta...
                 </p>
             </div>
             
-            <!-- Área de Opciones (Más grande y separada del borde) -->
             <div id="options-container" class="grid grid-cols-2 gap-4 w-full">
-                <!-- Los botones serán más grandes gracias a los estilos .neon-button -->
                 <button class="option-button neon-button"></button>
                 <button class="option-button neon-button"></button>
                 <button class="option-button neon-button"></button>
                 <button class="option-button neon-button"></button>
             </div>
 
-            <!-- Mensaje flotante de Feedback -->
             <div id="feedback-message" class="text-center"></div>
         </div>
-
-        <!-- Menú de Pausa -->
         <div id="pause-menu" class="game-screen-content hidden justify-center items-center text-center">
             <h2 class="text-4xl font-bold text-[#FF0064] mb-12 main-title">PAUSA ACTIVA</h2>
             <button id="resume-button" class="neon-button text-xl px-8 py-3 mb-4 w-full max-w-xs border-green-500 border-2 shadow-green-500/50 hover:shadow-green-500/80">
@@ -309,12 +530,13 @@
             </button>
         </div>
 
-        <!-- Pantalla de Fin de Juego -->
         <div id="game-over-screen" class="game-screen-content hidden justify-center items-center text-center">
             <h2 class="game-over-title text-4xl font-bold text-[#FF0064] mb-8 main-title">¡Viaje Interrumpido!</h2>
             
             <p class="text-xl mb-4">Puntuación Final:</p>
             <p id="final-score-value" class="text-5xl font-extrabold text-[#00E5FF] mb-8 main-title">0</p>
+            
+            <p id="space-mode-result-message" class="text-2xl font-bold text-purple-400 mb-4" style="display:none;"></p>
             
             <p class="text-lg text-yellow-400 mb-8">Puntuación Máxima: <span id="game-over-high-score-value">0</span></p>
             
@@ -328,7 +550,6 @@
 
     </div>
 
-    <!-- Enlazar archivos JS -->
     <script src="./questions.js"></script>
     <script src="./app.js"></script>
 </body>

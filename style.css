@@ -1,8 +1,8 @@
 /* Variables CSS para colores y fuentes */
 :root {
     --bg-color-dark: #1a0f28; /* Púrpura oscuro */
-    --accent-blue: #00bcd4; /* Azul cian brillante */
-    --accent-purple: #ff00ff; /* Magenta brillante */
+    --accent-blue: #00bcd4; /* Azul cian brillante (usado para neón principal) */
+    --accent-purple: #ff00ff; /* Magenta brillante (usado para vidas/títulos) */
     --accent-green: #00ff00; /* Verde neón */
     --accent-red: #ff3366; /* Rojo neón */
     --text-light: #e0e0e0;
@@ -15,11 +15,87 @@
 }
 
 body {
+    /* ================================================================= */
+/* 🚀 ESTILOS PARA EL MODO ESPACIAL (Starfield Animado) */
+/* ================================================================= */
+
+/* 1. Generación de estrellas con box-shadow */
+@function multiple-box-shadow ($n) {
+  $value: '#{random(2000)}px #{random(2000)}px #FFF';
+  @for $i from 2 through $n {
+    $value: '#{$value} , #{random(2000)}px #{random(2000)}px #FFF';
+  }
+  @return $value;
+}
+
+/* Variables para la cantidad de estrellas por capa */
+$stars-small: 700;
+$stars-medium: 200;
+$stars-large: 100;
+
+/* Estrellas estáticas (usando una única clase de fondo) */
+.stars {
+  width: 1px;
+  height: 1px;
+  background: transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  /* Capa 1: Estrellas pequeñas y densas */
+  &.small {
+    box-shadow: multiple-box-shadow($stars-small);
+    animation: animateStarfield 150s linear infinite;
+    transform: scale(0.7); /* Simular lejanía */
+  }
+  /* Capa 2: Estrellas medianas */
+  &.medium {
+    box-shadow: multiple-box-shadow($stars-medium);
+    animation: animateStarfield 100s linear infinite;
+    transform: scale(1);
+  }
+  /* Capa 3: Estrellas grandes y cercanas */
+  &.large {
+    box-shadow: multiple-box-shadow($stars-large);
+    animation: animateStarfield 50s linear infinite;
+    transform: scale(1.5); /* Simular cercanía */
+  }
+}
+
+/* 2. Animación de las estrellas */
+@keyframes animateStarfield {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-2000px, 1000px, 0); /* Movimiento diagonal sutil */
+  }
+}
+
+/* 3. Clase principal aplicada al BODY */
+body.space-mode-active {
+    background: #00000a; /* Fondo muy oscuro */
+    overflow: hidden; /* Evita que las estrellas fuera del viewport causen scroll */
+    color: #ffffff; 
+}
+
+/* 4. Estilos de juego (como antes, para el contraste) */
+body.space-mode-active #game-screen {
+    /* Mantenemos el contraste sobre el fondo animado */
+    background: rgba(10, 0, 50, 0.85); 
+    box-shadow: 0 0 50px rgba(0, 229, 255, 0.5); 
+    border: 1px solid #00E5FF;
+    z-index: 10; /* Asegurar que la pantalla de juego esté sobre las estrellas */
+    position: relative; 
+}
+
+/* ... Mantener el resto de estilos de botones y feedback del modo espacial ... */
     margin: 0;
-    font-family: var(--font-secondary);
+    /* Usamos Orbitron como principal ya que lo definiste en el HTML */
+    font-family: var(--font-primary); 
     color: var(--text-light);
     background: linear-gradient(135deg, var(--bg-color-dark), #0a0510);
-    overflow: hidden; /* Evita barras de desplazamiento si hay animaciones de fondo */
+    overflow: hidden; 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -27,43 +103,7 @@ body {
     flex-direction: column;
 }
 
-#game-container {
-    position: relative;
-    width: 100%;
-    max-width: 450px; /* Ancho típico para móvil */
-    height: 100vh;
-    max-height: 800px; /* Alto típico para móvil */
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 20px;
-    box-shadow: var(--neon-glow);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-/* Animación de fondo (opcional, más complejo, aquí solo un placeholder) */
-.galaxy-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('assets/galaxy-bg.png'); /* Necesitas una imagen de galaxia */
-    background-size: cover;
-    background-position: center;
-    opacity: 0.3;
-    z-index: -1;
-    animation: panBackground 60s linear infinite;
-}
-
-@keyframes panBackground {
-    0% { background-position: 0% 0%; }
-    100% { background-position: 100% 100%; }
-}
+/* El `device-frame` ya se definió en el <style> del HTML */
 
 
 /* Estilos de las pantallas */
@@ -79,7 +119,7 @@ body {
     align-items: center;
     padding: 20px;
     box-sizing: border-box;
-    background: rgba(0, 0, 0, 0.8); /* Fondo semitransparente para las pantallas */
+    background: rgba(0, 0, 0, 0.8);
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
@@ -91,29 +131,7 @@ body {
 }
 
 /* Títulos y texto */
-.game-title {
-    font-family: var(--font-primary);
-    font-size: 2.8em;
-    color: var(--accent-blue);
-    text-shadow: var(--neon-glow);
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.tagline {
-    font-size: 1.1em;
-    color: var(--text-light);
-    margin-bottom: 40px;
-    text-align: center;
-}
-
-.menu-title {
-    font-family: var(--font-primary);
-    font-size: 2em;
-    color: var(--accent-purple);
-    text-shadow: var(--neon-glow);
-    margin-bottom: 30px;
-}
+/* .main-title del HTML es más fuerte que .game-title, usaremos .main-title */
 
 .question-text {
     font-family: var(--font-primary);
@@ -122,19 +140,13 @@ body {
     margin-bottom: 30px;
     text-align: center;
     text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-    min-height: 90px; /* Para evitar saltos si la pregunta es corta */
+    min-height: 90px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.final-score-text, .high-score-text {
-    font-size: 1.4em;
-    margin-bottom: 10px;
-    color: var(--text-light);
-}
-
-/* Botones Neon */
+/* Botones Neon (se mantienen) */
 .neon-button {
     font-family: var(--font-primary);
     font-size: 1.3em;
@@ -162,20 +174,76 @@ body {
     transform: translateY(1px);
     box-shadow: var(--neon-glow);
 }
+/* --- ESTILOS ADICIONALES PARA EL HUD --- */
 
-.neon-button.secondary {
-    border-color: var(--accent-purple);
-    color: var(--accent-purple);
-    box-shadow: 0 0 8px var(--accent-purple), 0 0 20px var(--accent-purple);
+#general-controls {
+    position: absolute; /* Posicionamiento flotante */
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+    z-index: 100; /* Asegurar que esté encima de todo */
 }
 
-.neon-button.secondary:hover {
-    box-shadow: 0 0 15px var(--accent-purple), 0 0 30px var(--accent-purple);
-    color: var(--text-light);
+.control-button {
+    background-color: rgba(33, 33, 33, 0.8);
+    color: white;
+    border: 1px solid #444;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
+.control-button:hover {
+    background-color: rgba(66, 66, 66, 0.9);
+}
+
+/* --- Mejoras para Modo Espacial (Aspecto de cabina/neón) --- */
+
+/* Ajuste al contenedor principal del HUD en modo espacial */
+.space-mode-active #game-hud-main {
+    background-color: rgba(10, 0, 30, 0.8); /* Fondo oscuro con matices morados */
+    border-bottom: 2px solid #A020F0;
+}
+
+/* Cambiar los botones de control a neón púrpura en modo espacial */
+.space-mode-active .control-button {
+    background-color: #A020F0; /* Púrpura Neón */
+    color: white;
+    border: 2px solid #FF00FF;
+    box-shadow: 0 0 10px #FF00FF;
+}
+
+.space-mode-active .control-button:hover {
+    background-color: #8A00C8;
+    box-shadow: 0 0 15px #FF00FF;
+}
+
+/* Cambiar las etiquetas del HUD en modo espacial */
+.space-mode-active .info-label {
+    color: #FF00FF; /* Rosa Neón */
+    text-shadow: 0 0 5px #FF00FF;
+}
+/* Estilo para ocultar elementos que no se usan en modo espacial (vidas, power-up) */
+.space-mode-active #lives-bar, 
+.space-mode-active #power-up-hud,
+.space-mode-active #timer-display {
+    display: none !important;
+}
+
+/* En Modo Espacial, la racha es el foco, debe ser visible */
+.space-mode-active #hud-items-container {
+    justify-content: center; /* Centra el elemento de Racha */
+    width: 100%;
+}
+
+.space-mode-active .info-item {
+    padding: 0 30px; /* Separación más amplia */
+}
 /* Opciones de respuesta */
-.options-grid {
+#options-container { /* Renombrado en el HTML, usaremos el ID para evitar conflictos */
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
@@ -185,7 +253,7 @@ body {
 }
 
 .option-button {
-    font-family: var(--font-secondary);
+    font-family: var(--font-primary); /* Usamos Orbitron en opciones también */
     font-size: 1.1em;
     padding: 15px;
     border: 2px solid var(--accent-blue);
@@ -202,7 +270,7 @@ body {
     justify-content: center;
 }
 
-.option-button:hover {
+.option-button:hover:not(:disabled) {
     background-color: rgba(0, 188, 212, 0.3);
     box-shadow: var(--neon-glow);
     transform: translateY(-2px);
@@ -228,144 +296,85 @@ body {
     20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
 
-/* HUD */
-.hud {
+/* --- HUD REESTRUCTURADO --- */
+#game-hud-main {
+    /* Estilos base del contenedor principal del HUD, ya definidos en el HTML <style> */
+    /* Lo esencial es: flex-direction: column; justify-content: space-between */
+}
+
+.info-header-row {
+    /* Controla la alineación horizontal de Puntos, Tiempo, Racha, Vidas, Controles */
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    max-width: 400px;
-    margin-bottom: 20px;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
+    padding: 5px 0;
 }
 
-.hud-item {
-    font-family: var(--font-secondary);
-    font-size: 1em;
-    color: var(--text-light);
+.info-row {
+    /* Agrupa Puntos, Tiempo, Racha */
     display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 1em;
+}
+
+.hud-controls {
+    /* Agrupa Pausa y Sonido */
+    display: flex;
+    gap: 15px;
     align-items: center;
 }
 
-.score-display span, .high-score span, .final-score-text span {
-    color: var(--accent-green);
-    margin-left: 5px;
-    font-weight: bold;
-}
-
-.lives-bar {
+/* Vidas - Sobreescribe las reglas de .life-segment en el HTML si es necesario */
+#lives-bar {
     display: flex;
-    gap: 5px;
-    margin-left: 10px;
+    gap: 4px; /* Espacio más compacto */
+    margin-left: 0;
 }
-
 .life-segment {
-    width: 20px;
-    height: 10px;
-    background-color: rgba(255, 0, 255, 0.3); /* Color de vida inactiva */
-    border-radius: 3px;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
+    /* width/height/etc. están en el <style> del HTML */
+    background-color: rgba(255, 0, 100, 0.2); 
+    box-shadow: 0 0 3px rgba(255, 0, 100, 0.3);
 }
-
 .life-segment.active {
-    background-color: var(--accent-purple); /* Color de vida activa */
-    box-shadow: 0 0 5px var(--accent-purple), 0 0 10px var(--accent-purple);
+    background-color: #FF0064;
+    box-shadow: 0 0 8px #FF0064;
 }
 
-.hud-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-    opacity: 0.8;
-    transition: opacity 0.2s ease;
-}
-
-.hud-button:hover {
-    opacity: 1;
-}
-
-.hud-button img {
-    width: 30px;
-    height: 30px;
-    filter: drop-shadow(0 0 5px var(--accent-blue)); /* Efecto neón en los íconos */
-}
-
-/* Feedback de respuesta */
-.feedback-message {
-    margin-top: 20px;
-    font-size: 1.2em;
-    font-family: var(--font-primary);
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.4s ease, transform 0.4s ease;
-    text-align: center;
-    min-height: 25px; /* Evitar saltos de layout */
-}
-
-.feedback-message.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.feedback-message.correct {
-    color: var(--accent-green);
-    text-shadow: var(--neon-glow-green);
-}
-
-.feedback-message.incorrect {
-    color: var(--accent-red);
-    text-shadow: var(--neon-glow-red);
-}
-
-/* Loading Screen */
-#loading-screen {
-    background: linear-gradient(135deg, #0a0510, var(--bg-color-dark));
-    color: var(--text-light);
-    font-family: var(--font-primary);
-    font-size: 1.5em;
-}
-
-.loading-spinner {
-    border: 8px solid rgba(255,255,255,0.1);
-    border-top: 8px solid var(--accent-blue);
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 20px;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+/* Power-ups (Se mantienen los estilos en el HTML para mayor prioridad) */
+#power-up-hud {
+    /* Asegura que los power-ups estén centrados y bien espaciados */
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
 }
 
 /* Responsive (básico) */
-@media (max-width: 600px) {
-    #game-container {
-        border-radius: 0;
-        max-width: 100%;
+@media (max-width: 480px) {
+    .device-frame {
+        padding: 15px;
     }
-
-    .game-title {
-        font-size: 2em;
+    
+    .info-row {
+        gap: 10px;
+        font-size: 0.9em;
     }
-
+    
+    .life-segment {
+        width: 12px;
+        height: 7px;
+    }
+    
+    .power-up-button {
+        min-width: 70px;
+    }
+    
+    .pu-icon {
+        font-size: 1.3rem;
+    }
+    
     .neon-button {
-        font-size: 1.1em;
-        padding: 12px 25px;
-    }
-
-    .question-text {
-        font-size: 1.2em;
-    }
-
-    .options-grid {
-        grid-template-columns: 1fr; /* Una columna en pantallas muy pequeñas */
+        font-size: 1em;
     }
 }
